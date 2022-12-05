@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "afd_comparative_study"
-version = "0.1.0"
+version = "1.0.0"
 description = "Artifact repository to 'Approximately Measuring Functional Dependencies: a Comparative Study'"
 authors = ["Marcel Parciak <marcel.parciak@uhasselt.be>, Sebastiaan Weytjens <sebastiaan.weytjens@uhasselt.be>, Frank Neven <frank.neven@uhasselt.be>, Stijn Vansummeren <stijn.vansummeren@uhasselt.be>"]
 license = "MIT"
@@ -17,9 +17,6 @@ numpy = "^1.23.5"
 scikit-learn = "^1.1.3"
 plotly = "^5.11.0"
 jupyterlab = "^3.5.0"
-
-[tool.poetry.dev-dependencies]
-fd-discovery = {path = "../fd_discovery"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
