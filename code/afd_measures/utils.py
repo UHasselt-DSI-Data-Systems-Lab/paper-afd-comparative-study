@@ -8,6 +8,23 @@ import pandas as np
 
 from . import measures as afd_measures
 
+measure_map = {
+    'mu_corrected': '$\\mu\'$',
+    "g3_giannella": "$g'_3$",
+    "g3": "$g_3$",
+    "pdep": "$\\pdep$",
+    "tau": "$\\tau$",
+    "rho": "$\\rho$",
+    "g2": "$g_2$",
+    "fraction_of_information": "\\FI",
+    "g1_prime": "$g'_1$",
+    "g1": "$g_1$",
+    "rfi_corrected": "\\RFI'",
+    "smoothed_fraction_of_information_a0.5": "\\SFI",
+}
+
+measure_order = ["rho", "g2", "g3", "g3_giannella", "g1", "g1_prime", "pdep", "tau", "mu_corrected", "fraction_of_information", "rfi_corrected", "smoothed_fraction_of_information_a0.5"]
+
 
 def clean_colname(col: str) -> str:
     """Cleans the column names."""
