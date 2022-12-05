@@ -3,8 +3,8 @@ import threading
 from typing import Any, List
 import re
 
+import numpy as np
 import pandas as pd
-import pandas as np
 
 from . import measures as afd_measures
 
@@ -50,15 +50,11 @@ def parallelize_measuring(
         if result["trivial_fd"]:
             result[measure] = 1.0
         else:
-            try:
-                with TimeoutAfter(timeout=30):
-                    result[measure] = (
-                        getattr(afd_measures, measure)(_df, lhs, rhs)
-                        if not result["trivial_fd"]
-                        else 1.0
-                    )
-            except TimeoutError:
-                result[measure] = np.NaN
+            result[measure] = (
+                getattr(afd_measures, measure)(_df, lhs, rhs)
+                if not result["trivial_fd"]
+                else 1.0
+            )
     return result
 
 

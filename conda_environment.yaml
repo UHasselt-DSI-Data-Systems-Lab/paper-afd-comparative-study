@@ -1,0 +1,12 @@
+name: afd_exp
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - pandas
+  - tqdm
+  - joblib
+  - numpy
+  - scikit-learn
+  - jupyterlab
