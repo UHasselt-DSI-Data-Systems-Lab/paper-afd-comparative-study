@@ -23,3 +23,14 @@ def is_trivial_fd(df: pd.DataFrame, lhs: str, rhs: str) -> bool:
     """Check if lhs -> rhs in df is a trivial functional dependency, i.e. LHS is a key or RHS is only one value."""
     _df = df.dropna(subset=[lhs, rhs]).copy()
     return _df.loc[:, lhs].nunique() == _df.shape[0] or _df.loc[:, rhs].nunique() == 1
+
+def add_ground_truth(table: str, df: pd.DataFrame):
+    gt = pd.read_csv("../../data/ground_truth.csv")
+    table = table + ".csv"
+    gt = gt.loc[gt.table == table]
+
+    gt_fds = ["{};{}".format(fd["lhs"], fd["rhs"]) for _,fd in gt.iterrows()]
+    gt_results = ["{};{}".format(fd["lhs"], fd["rhs"]) in gt_fds for _,fd in df.iterrows()]
+    df = df.assign(gt=gt_results)
+
+    return df
