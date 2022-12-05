@@ -1,10 +1,10 @@
 table,lhs,rhs
 adult.csv,education-num,education
 adult.csv,education,education-num
-claims.csv,irportCode,AirportName
-claims.csv,irportName,AirportCode
-claims.csv,tatus,Disposition
-claims.csv,isposition,Status
+claims.csv,AirportCode,AirportName
+claims.csv,AirportName,AirportCode
+claims.csv,Status,Disposition
+claims.csv,Disposition,Status
 dblp10k.csv,p1booktitle,p1booktitlefull
 dblp10k.csv,p1journal,p1journalfull
 dblp10k.csv,p1journal,p1publisher
