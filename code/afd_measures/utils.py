@@ -75,7 +75,12 @@ def add_ground_truth(table: str, df: pd.DataFrame):
 
 
 def parallelize_measuring(
-    df: pd.DataFrame, table: str, lhs: Any, rhs: Any, measures: List[str]
+    df: pd.DataFrame,
+    table: str,
+    lhs: Any,
+    rhs: Any,
+    measures: List[str],
+    timeout: int = 30,
 ):
     """Common method to parallelize measuring df[lhs] -> df[rhs] of a table namen table."""
     result = {
@@ -97,7 +102,7 @@ def parallelize_measuring(
                 getattr(afd_measures, measure),
                 args=(_df, lhs, rhs),
                 default=np.NaN,
-                timeout=5,
+                timeout=timeout,
             )
     return result
 
