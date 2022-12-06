@@ -1,5 +1,4 @@
-import ctypes
-import threading
+import multiprocessing as mp
 from typing import Any, List
 import re
 
@@ -94,41 +93,24 @@ def parallelize_measuring(
         if result["trivial_fd"]:
             result[measure] = 1.0
         else:
-            result[measure] = (
-                getattr(afd_measures, measure)(_df, lhs, rhs)
-                if not result["trivial_fd"]
-                else 1.0
+            result[measure] = timeout(
+                getattr(afd_measures, measure),
+                args=(_df, lhs, rhs),
+                default=np.NaN,
+                timeout=5,
             )
     return result
 
 
-class TimeoutAfter:
-    """A class to allow a controlled timeout."""
-
-    def __init__(self, timeout=(10), exception=TimeoutError):
-        self._exception = exception
-        self._caller_thread = threading.current_thread()
-        self._timeout = timeout
-        self._timer = threading.Timer(self._timeout, self.raise_caller)
-        self._timer.daemon = True
-        self._timer.start()
-
-    def __enter__(self):
-        try:
-            yield
-        finally:
-            self._timer.cancel()
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self._timer.cancel()
-
-    def raise_caller(self):
-        ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-            ctypes.c_long(self._caller_thread._ident), ctypes.py_object(self._exception)
-        )
-        if ret == 0:
-            raise ValueError("Invalid thread ID")
-        elif ret > 1:
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(self._caller_thread._ident, None)
-            raise SystemError("PyThreadState_SetAsyncExc failed")
+def timeout(func, args=(), kwds={}, timeout=1, default=None):
+    pool = mp.Pool(processes=1)
+    result = pool.apply_async(func, args=args, kwds=kwds)
+    try:
+        val = result.get(timeout=timeout)
+    except mp.TimeoutError:
+        pool.terminate()
+        return default
+    else:
+        pool.close()
+        pool.join()
+        return val
