@@ -98,7 +98,7 @@ def parallelize_measuring(
         if result["trivial_fd"]:
             result[measure] = 1.0
         else:
-            result[measure] = timeout(
+            result[measure] = run_with_timeout(
                 getattr(afd_measures, measure),
                 args=(_df, lhs, rhs),
                 default=np.NaN,
@@ -107,7 +107,8 @@ def parallelize_measuring(
     return result
 
 
-def timeout(func, args=(), kwds={}, timeout=1, default=None):
+def run_with_timeout(func, args=(), kwds={}, timeout=30, default=None):
+    """A method that uses multiprocessing to timeout a function call. Taken from stackoverflow, thanks to the user `unutbu` for sharing it: https://stackoverflow.com/a/13822315 ."""
     pool = mp.Pool(processes=1)
     result = pool.apply_async(func, args=args, kwds=kwds)
     try:
