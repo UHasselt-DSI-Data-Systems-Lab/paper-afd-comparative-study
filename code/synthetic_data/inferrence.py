@@ -11,18 +11,22 @@ def infer_settings(table: pd.DataFrame, noise: bool = False) -> Dict[str, Any]:
         raise ValueError(
             "At least two columns in the table are needed for this method."
         )
+    table = table.iloc[:,[0, 1]].dropna(how='any', axis='index').copy()
+    if table.empty:
+        return {"tuples": 0}
 
     lhs_settings = infer_column_settings(table.iloc[:, 0])
     rhs_settings = infer_column_settings(table.iloc[:, 1])
 
-    found_settings = {}
-    found_settings["tuples"] = lhs_settings["tuples"]
-    found_settings["lhs_cardinality"] = lhs_settings["cardinality"]
-    found_settings["rhs_cardinality"] = rhs_settings["cardinality"]
-    found_settings["lhs_dist_alpha"] = lhs_settings["dist_alpha"]
-    found_settings["lhs_dist_beta"] = lhs_settings["dist_beta"]
-    found_settings["rhs_dist_alpha"] = rhs_settings["dist_alpha"]
-    found_settings["rhs_dist_beta"] = rhs_settings["dist_beta"]
+    found_settings = {
+        "tuples": lhs_settings["tuples"],
+        "lhs_cardinality": lhs_settings["cardinality"],
+        "rhs_cardinality": rhs_settings["cardinality"],
+        "lhs_dist_alpha": lhs_settings["dist_alpha"],
+        "lhs_dist_beta": lhs_settings["dist_beta"],
+        "rhs_dist_alpha": rhs_settings["dist_alpha"],
+        "rhs_dist_beta": rhs_settings["dist_beta"],
+    }
 
     # noise only makes sense if we have an FD, otherwise it serves no purpose
     if noise:
@@ -71,6 +75,10 @@ def infer_column_settings(column: pd.Series) -> Dict[str, Any]:
     # statistical method of moments inference with two unknown parameters: https://en.wikipedia.org/wiki/Beta_distribution#Two_unknown_parameters
     mean = infered_values.mean()
     variance = infered_values.var()
-    found_settings["dist_alpha"] = mean * ((mean * (1 - mean)) / variance - 1)
-    found_settings["dist_beta"] = (1 - mean) * ((mean * (1 - mean)) / variance - 1)
+    if variance == 0:  # without variance, we have a normal distribution
+        found_settings["dist_alpha"] = 1.0
+        found_settings["dist_beta"] = 1.0
+    else:
+        found_settings["dist_alpha"] = mean * ((mean * (1 - mean)) / variance - 1)
+        found_settings["dist_beta"] = (1 - mean) * ((mean * (1 - mean)) / variance - 1)
     return found_settings

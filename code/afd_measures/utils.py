@@ -27,14 +27,14 @@ measure_order = [
     "g2",
     "g3",
     "g3_prime",
-    "fraction_of_information",
-    "reliable_fraction_of_information_prime",
-    "smoothed_fraction_of_information",
     "g1",
     "g1_prime",
     "pdep",
     "tau",
     "mu_prime",
+    "fraction_of_information",
+    "reliable_fraction_of_information_prime",
+    "smoothed_fraction_of_information",
 ]
 
 
