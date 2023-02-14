@@ -42,6 +42,29 @@ def g1_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
     )
 
 
+def shannon_g1(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+    """This measure calculates 1 - H_R(Y|X), where H_R is the conditional Shannon entropy."""
+    r_size = df.shape[0]
+    xy_counts = df.loc[:, [lhs, rhs]].value_counts().reset_index()
+    xy_counts.columns = [lhs, rhs, "xy_count"]
+    x_counts = df.loc[:, lhs].value_counts().reset_index()
+    x_counts.columns = [lhs, "x_count"]
+    counts = xy_counts.merge(x_counts, on=lhs)
+    shannonYX = (
+        -1.0
+        * (
+            (counts["xy_count"] / r_size)
+            * np.log2((counts["xy_count"] / r_size) / (counts["x_count"] / r_size))
+        ).sum()
+    )
+    return 1 - shannonYX
+
+
+def shannon_g1_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+    """The baselined version of shannon_g1."""
+    return max(0, shannon_g1(df, lhs, rhs))
+
+
 def g2(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
     """This measure is g_2 as proposed by [Kivinen & Mannila, 1995](https://doi.org/10.1016/0304-3975(95)00028-U)."""
     xy_counts = df.loc[:, [lhs, rhs]].value_counts().reset_index()
@@ -93,6 +116,14 @@ def fraction_of_information(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
         ).sum()
     )
     return (shannonY - shannonYX) / shannonY
+
+
+def fraction_of_information_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+    """This measure is a renormalized variant of FI proposed by us, analogous to mu."""
+    fi = fraction_of_information(df, lhs, rhs)
+    rfi = reliable_fraction_of_information(df, lhs, rhs)
+    # note that RFI := FI - E(FI) <=> RFI + FI = -E(FI)
+    return rfi / (1 + (rfi - fi))
 
 
 def smoothed_fraction_of_information(
