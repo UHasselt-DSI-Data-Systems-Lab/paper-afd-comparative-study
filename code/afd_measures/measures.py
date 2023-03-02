@@ -6,6 +6,19 @@ import numpy as np
 import pandas as pd
 
 
+def batched(iterable, n):
+    """Batch data into tuples of length n. The last batch may be shorter.
+    Taken from https://docs.python.org/3/library/itertools.html#itertools-recipes
+    """
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError("n must be at least one")
+    it = iter(iterable)
+    while batch := tuple(itertools.islice(it, n)):
+
+        yield batch
+
+
 def rho(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
     """This measure is rho as proposed to detect soft functional dependencies for CORDS by [Ilyas et al., 2004](https://dl.acm.org/doi/abs/10.1145/1007568.1007641)."""
     xy_counts = df.loc[:, [lhs, rhs]].value_counts().reset_index()
@@ -40,6 +53,29 @@ def g1_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
         violating_tuple_pairs
         / ((df.shape[0] ** 2) - (xy_counts["xy_count"].pow(2)).sum())
     )
+
+
+def shannon_g1(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+    """This measure calculates 1 - H_R(Y|X), where H_R is the conditional Shannon entropy."""
+    r_size = df.shape[0]
+    xy_counts = df.loc[:, [lhs, rhs]].value_counts().reset_index()
+    xy_counts.columns = [lhs, rhs, "xy_count"]
+    x_counts = df.loc[:, lhs].value_counts().reset_index()
+    x_counts.columns = [lhs, "x_count"]
+    counts = xy_counts.merge(x_counts, on=lhs)
+    shannonYX = (
+        -1.0
+        * (
+            (counts["xy_count"] / r_size)
+            * np.log2((counts["xy_count"] / r_size) / (counts["x_count"] / r_size))
+        ).sum()
+    )
+    return 1 - shannonYX
+
+
+def shannon_g1_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+    """The baselined version of shannon_g1."""
+    return max(0, shannon_g1(df, lhs, rhs))
 
 
 def g2(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
@@ -95,6 +131,14 @@ def fraction_of_information(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
     return (shannonY - shannonYX) / shannonY
 
 
+def fraction_of_information_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+    """This measure is a renormalized variant of FI proposed by us, analogous to mu."""
+    fi = fraction_of_information(df, lhs, rhs)
+    rfi = reliable_fraction_of_information(df, lhs, rhs)
+    # note that RFI := FI - E(FI) <=> RFI + FI = -E(FI)
+    return rfi / (1 + (rfi - fi))
+
+
 def smoothed_fraction_of_information(
     df: pd.DataFrame, lhs: Any, rhs: Any, alpha: float = 0.5
 ) -> float:
@@ -106,24 +150,31 @@ def smoothed_fraction_of_information(
     xy_counts.columns = [lhs, rhs, "xy_count"]
     x_counts = df.loc[:, lhs].value_counts().reset_index()
     x_counts.columns = [lhs, "x_count"]
-    counts = pd.DataFrame(
-        itertools.product(df.loc[:, lhs].unique(), df.loc[:, rhs].unique()),
-        columns=[lhs, rhs],
-    )
-    counts = counts.merge(xy_counts, on=[lhs, rhs], how="left")
-    counts = counts.merge(x_counts, on=lhs, how="left")
-    counts = counts.fillna(0.0)
-    smoothedX = (counts["x_count"] + domY_size * alpha) / (
-        r_size + domX_size * domY_size * alpha
-    )
-    smoothedYX = (counts["xy_count"] + alpha) / (r_size + domX_size * domY_size * alpha)
+    shannonYX_sum = 0.0
+    for batch in batched(
+        itertools.product(df.loc[:, lhs].unique(), df.loc[:, rhs].unique()), 10_000_000
+    ):
+        counts = pd.DataFrame(
+            batch,
+            columns=[lhs, rhs],
+        )
+        counts = counts.merge(xy_counts, on=[lhs, rhs], how="left")
+        counts = counts.merge(x_counts, on=lhs, how="left")
+        counts = counts.fillna(0.0)
+        smoothedX = (counts["x_count"] + domY_size * alpha) / (
+            r_size + domX_size * domY_size * alpha
+        )
+        smoothedYX = (counts["xy_count"] + alpha) / (
+            r_size + domX_size * domY_size * alpha
+        )
+        shannonYX_sum += (smoothedYX * np.log2(smoothedYX / smoothedX)).sum()
+    smoothed_shannonYX = -1.0 * shannonYX_sum
     y_counts = df.loc[:, rhs].value_counts().reset_index()
     y_counts.columns = [rhs, "y_count"]
     smoothedY = (y_counts["y_count"] + domX_size * alpha) / (
         r_size + domX_size * domY_size * alpha
     )
     smoothed_shannonY = -1.0 * (smoothedY * np.log2(smoothedY)).sum()
-    smoothed_shannonYX = -1.0 * (smoothedYX * np.log2(smoothedYX / smoothedX)).sum()
     return (smoothed_shannonY - smoothed_shannonYX) / smoothed_shannonY
 
 
