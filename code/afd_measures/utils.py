@@ -16,10 +16,12 @@ measure_map = {
     "rho": "$\\rho$",
     "g2": "$g_2$",
     "fraction_of_information": "\\FI",
+    "fraction_of_information_prime": "\\FI'",
     "g1_prime": "$g'_1$",
     "g1": "$g_1$",
     "reliable_fraction_of_information_prime": "\\RFI'",
     "smoothed_fraction_of_information": "\\SFI",
+    "shannon_g1_prime": "$sg'_1$",
 }
 
 measure_order = [
@@ -27,14 +29,16 @@ measure_order = [
     "g2",
     "g3",
     "g3_prime",
+    "shannon_g1_prime",
+    "fraction_of_information",
+    "fraction_of_information_prime",
+    "reliable_fraction_of_information_prime",
+    "smoothed_fraction_of_information",
     "g1",
     "g1_prime",
     "pdep",
     "tau",
     "mu_prime",
-    "fraction_of_information",
-    "reliable_fraction_of_information_prime",
-    "smoothed_fraction_of_information",
 ]
 
 
