@@ -8,7 +8,7 @@ import pandas as pd
 from . import measures as afd_measures
 
 measure_map = {
-    "mu_prime": "$\\mu'$",
+    "mu_prime": "$\\muplus$",
     "g3_prime": "$g'_3$",
     "g3": "$g_3$",
     "pdep": "$\\pdep$",
@@ -16,12 +16,12 @@ measure_map = {
     "rho": "$\\rho$",
     "g2": "$g_2$",
     "fraction_of_information": "\\FI",
-    "fraction_of_information_prime": "\\FI'",
+    "fraction_of_information_prime": "\\RFInorm",
     "g1_prime": "$g'_1$",
     "g1": "$g_1$",
-    "reliable_fraction_of_information_prime": "\\RFI'",
+    "reliable_fraction_of_information_prime": "\\RFIplus",
     "smoothed_fraction_of_information": "\\SFI",
-    "shannon_g1_prime": "$sg'_1$",
+    "shannon_g1_prime": "$\\SHANNONGONE$",
 }
 
 measure_order = [
@@ -31,8 +31,8 @@ measure_order = [
     "g3_prime",
     "shannon_g1_prime",
     "fraction_of_information",
-    "fraction_of_information_prime",
     "reliable_fraction_of_information_prime",
+    "fraction_of_information_prime",
     "smoothed_fraction_of_information",
     "g1",
     "g1_prime",
