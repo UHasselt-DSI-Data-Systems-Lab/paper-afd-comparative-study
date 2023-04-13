@@ -12,8 +12,8 @@ def assign_fds(settings: Dict[str, Any]) -> Dict[int, int]:
     """
 
     dictionary = {}
-    for l in range(settings["lhs_cardinality"]):
-        dictionary[l] = int(
+    for left in range(settings["lhs_cardinality"]):
+        dictionary[left] = int(
             (settings["rhs_cardinality"]) * settings["rhs_distribution"]()
         )
 
@@ -29,10 +29,10 @@ def generate_tuples(
 
     values = {0: [], 1: []}
     for _ in range(settings["tuples"]):
-        l = int((settings["lhs_cardinality"]) * settings["lhs_distribution"]())
-        values[0].append(l)
+        left = int((settings["lhs_cardinality"]) * settings["lhs_distribution"]())
+        values[0].append(left)
         if fd_dictionary:
-            values[1].append(fd_dictionary[l])
+            values[1].append(fd_dictionary[left])
         else:
             values[1].append(
                 int((settings["rhs_cardinality"]) * settings["rhs_distribution"]())
@@ -184,38 +184,6 @@ def introduce_noise_typo(
             dirty_values[1][x_index] = random.choice(
                 typo_mapper[dirty_values[1][x_index]]
             )
-    return dirty_values
-
-
-def introduce_lhs_noise_copy(
-    settings: Dict[str, Any], values: Dict[int, List[int]]
-) -> Dict[int, List[int]]:
-    """Introduce noise into a clean dataset on the LHS. It will do this in a controlled fashion, which means that the set noise level is guranteed (if possible, that is). To introduce noise, this method will copy LHS values that imply another RHS value in the clean data."""
-    noisy_k = int(settings["noise"] * settings["tuples"])
-    if noisy_k == 0:
-        return values  # nothing to do
-    df = pd.DataFrame(values)
-    try:
-        X_values = potential_noisy_indices(df, noisy_k)
-    except ValueError:
-        logging.error(
-            f'It is not possible to introduce {settings["noise"]} noise to the dataset. Check the dataset with `get_noise_potential()` first.\n'
-        )
-        raise ValueError("Cannot create dataset, noise is set too high.")
-    dirty_values = copy.deepcopy(values)
-    for x, n in pd.Series(X_values).value_counts().items():
-        clean_y = df.loc[df.iloc[:, 0] == x, 1].values[0]
-        # find x values that do not share the same y value
-        x_candidates = df.loc[df.iloc[:, 1] != clean_y, 0].value_counts()
-        # get random indices of rows with the X value we want to change
-        indices_to_change = df.loc[df.iloc[:, 0] == x].sample(n=n).index
-        # an array of Y values to change the identified rows to (i.e. the noise)
-        # choosing from existing Y values hopefully maintains the Y distribution
-        x_values = random.choices(
-            x_candidates.index.tolist(), k=n, weights=x_candidates.values.tolist()
-        )
-        for i, x_index in enumerate(indices_to_change):
-            dirty_values[0][x_index] = x_values[i]
     return dirty_values
 
 

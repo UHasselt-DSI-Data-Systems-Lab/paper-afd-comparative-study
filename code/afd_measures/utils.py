@@ -8,20 +8,20 @@ import pandas as pd
 from . import measures as afd_measures
 
 measure_map = {
-    "mu_prime": "$\\muplus$",
+    "mu_plus": "$\\muplus$",
     "g3_prime": "$g'_3$",
     "g3": "$g_3$",
     "pdep": "$\\pdep$",
     "tau": "$\\tau$",
     "rho": "$\\rho$",
     "g2": "$g_2$",
-    "fraction_of_information": "\\FI",
-    "fraction_of_information_prime": "\\RFInorm",
+    "fraction_of_information": "$\\FI$",
+    "reliable_fraction_of_information_norm": "$\\RFInorm$",
     "g1_prime": "$g'_1$",
     "g1": "$g_1$",
-    "reliable_fraction_of_information_prime": "\\RFIplus",
-    "smoothed_fraction_of_information": "\\SFI",
-    "shannon_g1_prime": "$\\SHANNONGONE$",
+    "reliable_fraction_of_information_plus": "$\\RFIplus$",
+    "smoothed_fraction_of_information": "$\\SFI$",
+    "shannon_g1_plus": "$\\SHANNONGONE$",
 }
 
 measure_order = [
@@ -29,16 +29,16 @@ measure_order = [
     "g2",
     "g3",
     "g3_prime",
-    "shannon_g1_prime",
+    "shannon_g1_plus",
     "fraction_of_information",
-    "reliable_fraction_of_information_prime",
-    "fraction_of_information_prime",
+    "reliable_fraction_of_information_plus",
+    "reliable_fraction_of_information_norm",
     "smoothed_fraction_of_information",
     "g1",
     "g1_prime",
     "pdep",
     "tau",
-    "mu_prime",
+    "mu_plus",
 ]
 
 

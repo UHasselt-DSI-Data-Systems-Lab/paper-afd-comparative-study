@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import pandas as pd
 
@@ -11,7 +11,7 @@ def infer_settings(table: pd.DataFrame, noise: bool = False) -> Dict[str, Any]:
         raise ValueError(
             "At least two columns in the table are needed for this method."
         )
-    table = table.iloc[:,[0, 1]].dropna(how='any', axis='index').copy()
+    table = table.iloc[:, [0, 1]].dropna(how="any", axis="index").copy()
     if table.empty:
         return {"tuples": 0}
 

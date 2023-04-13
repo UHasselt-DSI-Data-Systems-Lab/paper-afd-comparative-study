@@ -73,7 +73,7 @@ def shannon_g1(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
     return 1 - shannonYX
 
 
-def shannon_g1_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+def shannon_g1_plus(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
     """The baselined version of shannon_g1."""
     return max(0, shannon_g1(df, lhs, rhs))
 
@@ -129,14 +129,6 @@ def fraction_of_information(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
         ).sum()
     )
     return (shannonY - shannonYX) / shannonY
-
-
-def fraction_of_information_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
-    """This measure is a renormalized variant of FI proposed by us, analogous to mu."""
-    fi = fraction_of_information(df, lhs, rhs)
-    rfi = reliable_fraction_of_information(df, lhs, rhs)
-    # note that RFI := FI - E(FI) <=> RFI + FI = -E(FI)
-    return rfi / (1 + (rfi - fi))
 
 
 def smoothed_fraction_of_information(
@@ -201,11 +193,19 @@ def reliable_fraction_of_information(df: pd.DataFrame, lhs: Any, rhs: Any) -> fl
     return fi_value - bias_estimator
 
 
-def reliable_fraction_of_information_prime(
+def reliable_fraction_of_information_plus(
     df: pd.DataFrame, lhs: Any, rhs: Any
 ) -> float:
     """This measure is RFI redefined by us to result in a score in the range [0;1]."""
     return max(0.0, reliable_fraction_of_information(df, lhs, rhs))
+
+
+def reliable_fraction_of_information_norm(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+    """This measure is a renormalized variant of FI proposed by us, analogous to mu."""
+    fi = fraction_of_information(df, lhs, rhs)
+    rfi = reliable_fraction_of_information_plus(df, lhs, rhs)
+    # note that RFI := FI - E(FI) <=> RFI + FI = -E(FI)
+    return rfi / (1 + (rfi - fi))
 
 
 def pdep_self(df: pd.DataFrame, y: Any) -> float:
@@ -239,6 +239,6 @@ def mu(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
     return 1.0 - ((1 - pdepXY) / (1 - pdepY)) * ((r_size - 1) / (r_size - domX_size))
 
 
-def mu_prime(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
+def mu_plus(df: pd.DataFrame, lhs: Any, rhs: Any) -> float:
     """This measure is mu redefined by us to result in a score in the range [0;1]."""
     return max(0.0, mu(df, lhs, rhs))
