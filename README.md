@@ -41,6 +41,8 @@ $ jupyter lab
 
 ## Dataset References
 
+In addition to this repository, we made our benchmark also available on Zenodo: [find it here](https://www.zenodo.org/record/8098909)
+
 * `adult.csv`: Dua, D. and Graff, C. (2019). [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml). Irvine, CA: University of California, School of Information and Computer Science. 
 * `claims.csv`: TSA Claims Data 2002 to 2006, [published by the U.S. Department of Homeland Security](https://www.dhs.gov/tsa-claims-data).
 * `dblp10k.csv`: Frequency-aware Similarity Measures. Lange, Dustin; Naumann, Felix (2011). 243–248. [Made available as DBLP Dataset 2](https://hpi.de/naumann/projects/repeatability/datasets/dblp-dataset.html).
