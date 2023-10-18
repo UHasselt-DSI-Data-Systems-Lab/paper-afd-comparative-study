@@ -64,7 +64,11 @@ def is_trivial_fd(df: pd.DataFrame, lhs: str, rhs: str) -> bool:
     return _df.loc[:, lhs].nunique() == _df.shape[0] or _df.loc[:, rhs].nunique() == 1
 
 
-def add_ground_truth(table: str, df: pd.DataFrame):
+def add_ground_truth(
+    table: str, 
+    df: pd.DataFrame,
+    gt_path: str = "../../data/ground_truth.csv"
+) -> pd.DataFrame:
     gt = pd.read_csv("../../data/ground_truth.csv")
     table = table + ".csv"
     gt = gt.loc[gt.table == table]

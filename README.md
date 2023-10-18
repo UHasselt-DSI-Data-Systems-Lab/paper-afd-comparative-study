@@ -1,6 +1,16 @@
-# AFD comparative study
+# AFD measures
 
-This repository contains all artifacts to "Approximately Measuring Functional Dependencies: a Comparative Study".
+A collection of measures for Approximate Functional Dependencies in relational data. Additionally, this repository contains all artifacts to "Approximately Measuring Functional Dependencies: a Comparative Study".
+
+## Short description
+
+In real-world research projects, we often encounter unknown relational (tabular)
+datasets. In order to process them efficiently, functional dependencies (FDs) give us structural
+insight into relational data, describing strong relationships between columns. Errors in real-world
+data let traditional FD detection techniques fail. Hence we consider approximate FDs (AFDs): FDs
+that approximately hold in relational data. 
+
+This repository contains the implemented measures as well as the all artifacts to "Approximately Measuring Functional Dependencies: a Comparative Study".
 
 ## Overview
 
@@ -17,16 +27,35 @@ This repository contains all artifacts to "Approximately Measuring Functional De
 * `paper`: A full version of the paper including all proofs.
 * `results`: results of applying the AFD measures to the datasets.
 
-## Installation
+## Installation (measure library)
 
-Use the code in this repository with [Poetry](https://python-poetry.org) or [Conda](https://conda.io).
+This library can be found on [PyPI](https://pypi.org): [`afd-measures`](https://pypi.org/project/afd-measures). Install it using `pip` like this:
+
+```sh
+pip install afd-measures
+```
+
+### Usage (measure library)
+
+To apply one of the measures to your data, you will need a pandas DataFrame of your relation. Pandas will automatically installed as a dependency of `afd-measures`.
+You can start with this Python snippet to analyse your own data (a CSV file in this example):
+```python
+import afd_measures
+import pandas as pd
+
+my_data = pd.read_csv("my_amazing_table.csv")
+print(afd_measures.mu_plus(my_data, lhs="X", rhs="Y"))
+```
+
+## Installation (experiments)
+
+To revisit the experiments that we did, clone this repository and install all requirements with [Poetry](https://python-poetry.org) (preferred) or [Conda](https://conda.io).
 
 ### Poetry
 
-Install all dependencies via Poetry and start Jupyter lab to investigate the code.
-
+Install the requirements using poetry. Use the extra flag "experiments" to install all additional requirements for the experiments to work. This includes (amongst others) [Jupyter Lab](https://jupyter.org/).
 ```sh
-$ poetry install
+$ poetry install -E experiments
 $ jupyter lab
 ```
 
